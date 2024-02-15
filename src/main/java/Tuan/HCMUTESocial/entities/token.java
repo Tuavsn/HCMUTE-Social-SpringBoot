@@ -5,8 +5,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,18 +15,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "post_comment")
-public class post_comment {
+public class token {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
-	@ManyToOne
-	private post postId;
+	public int tokenId;
+	public String token;
+	public String tokenType = "BEARER";
+	public Boolean revoked;
+	public Boolean expired;
 	@ManyToOne
 	private user userId;
-	private String content;
-	@OneToOne
-	private user tag;
-	@OneToOne
-	private user reply;
 }
