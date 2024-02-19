@@ -1,43 +1,45 @@
 package Tuan.HCMUTESocial.controller;
 
+
+import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import Tuan.HCMUTESocial.DTO.AuthenticationResponse;
+import Tuan.HCMUTESocial.DTO.UserLoginDto;
+import Tuan.HCMUTESocial.DTO.UserRegistDto;
+import Tuan.HCMUTESocial.service.AuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class AuthController {
 	
+	@Autowired
+	AuthenticationService authenticationService;
 	
-	@GetMapping("/login")
-	public ResponseEntity<String> Login() {
-		return ResponseEntity.ok("well come to login page");	
+	@PostMapping("/register")
+	public ResponseEntity<AuthenticationResponse> Regist(@RequestBody UserRegistDto request) {
+		return ResponseEntity.ok(authenticationService.register(request));	
 	}
 	
+	@PostMapping("/login")
+	public ResponseEntity<AuthenticationResponse> Login(@RequestBody UserLoginDto request) {
+		return ResponseEntity.ok(authenticationService.login(request));
+	}
 	
-//	
-//	@Autowired
-//	private AuthenticationManager authenticationManager;
-//	
-//	@Autowired
-//	private PasswordEncoder passwordEncoder;
+	@PostMapping("/refresh-token")
+	public void RefreshToken(
+			HttpServletRequest request,
+			HttpServletResponse response
+	) throws IOException {
+		authenticationService.refreshToken(request, response);
+	}
 	
-//	User signin
-//	@PostMapping("/signin")
-//	public ResponseEntity<String> authenticateUser(@RequestBody UserLoginDto loginDto) {
-//		Authentication authentication = authenticationManager.authenticate(
-//				new UsernamePasswordAuthenticationToken(loginDto.getEmail()
-//				, loginDto.getPassword()));
-//		SecurityContextHolder.getContext().setAuthentication(authentication);
-//		return new ResponseEntity<>("User signed-in successfully!.", HttpStatus.OK);
-//	}
-	
-//	@PostMapping("/regist")
-//	public ResponseEntity<?> registUser(@RequestBody UserRegistDto registDto) {
-//		
-//	}
-	
-//	@GetMapping("/regist")
-//	public ResponseEntity<Object> register(@RequestBody User)
 }

@@ -12,14 +12,7 @@ import Tuan.HCMUTESocial.repository.UserRepository;
 
 @CrossOrigin("http://localhost:3000")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class UserController {
-	@Autowired
-	private UserRepository userRepository;
 	
-	@GetMapping("/findAll")
-	public ResponseEntity<Iterable<user>> getAllUser() {
-		Iterable<user> users = userRepository.findAll();
-		return ResponseEntity.ok(users);
-	}
 }

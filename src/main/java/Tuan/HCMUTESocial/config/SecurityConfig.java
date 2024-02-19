@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -27,42 +28,24 @@ import Tuan.HCMUTESocial.repository.UserRepository;
 public class SecurityConfig {
 
 	@Autowired
-	private UserRepository userRepository;
+	private AuthenticationProvider authenticationProvider;
 	
-	@Bean
-	UserDetailsService userDetailsService() {
-		return username -> userRepository.findByUserName(username)
-				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
-	}
-	
-	@Bean
-	PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-	
-	@Bean
-	AuthenticationProvider authenticationProvider() {
-		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-		authProvider.setUserDetailsService(userDetailsService());
-		authProvider.setPasswordEncoder(passwordEncoder());
-		return authProvider;
-	}
-	
-	@Bean
-	AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-		return config.getAuthenticationManager();
-	}
+	@Autowired
+	private JwtFilter jwtFilter;
 	
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-			.authorizeHttpRequests(
-				author -> author
-				.requestMatchers(HttpMethod.GET, "/api/login").permitAll()
-				.anyRequest().authenticated())
 			.csrf((csrf) -> csrf.disable())
+			.authorizeHttpRequests (
+				request -> 
+				request.requestMatchers("/api/auth/**").permitAll()
+				.anyRequest()
+				.authenticated()
+			)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.authenticationProvider(authenticationProvider())
+			.authenticationProvider(authenticationProvider)
+			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 			.httpBasic(withDefaults());
 		
 		return http.build();
